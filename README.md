@@ -11,7 +11,8 @@ active Python files to HACS's managed copy before AppDaemon starts:
 ```sh
 python3 /homeassistant/appdaemon/apps/qolsysgw/deploy.py \
   --target /config/apps/qolsysgw \
-  --backup /config/codex_backups/qolsysgw-before-fork
+  --backup /config/codex_backups/qolsysgw-before-fork \
+  --receipt /share/qolsysgw-source.json
 ```
 
 Keep that command in the AppDaemon app's `init_commands`. It performs deployment
@@ -20,6 +21,8 @@ those files. Existing Python files are backed up once. Directories stay real so
 AppDaemon can discover and watch the linked modules. This also links new source
 files after an update. The deployment tests verify that replacing a managed file
 changes the active installation without copying or reapplying a hotfix.
+The receipt records the active source paths, links, and file hashes so the running
+installation can be checked against the installed fork after an update.
 
 ![build](https://github.com/XaF/qolsysgw/actions/workflows/build.yaml/badge.svg)
 ![hacs validation](https://github.com/XaF/qolsysgw/actions/workflows/hacs-validation.yaml/badge.svg)

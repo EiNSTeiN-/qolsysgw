@@ -5,6 +5,8 @@ Each source file is linked to HACS's managed copy, so updates do not restore an
 unrelated upstream installation. Run before AppDaemon starts.
 """
 import argparse
+import hashlib
+import json
 import shutil
 from pathlib import Path
 
@@ -36,11 +38,24 @@ def deploy(source, target, backup):
     for path in target.rglob('*.py'):
         if path.is_symlink() and path.relative_to(target) not in expected:
             path.unlink()
+    return {
+        'source': str(source),
+        'target': str(target),
+        'linked_files': len(expected),
+        'all_linked': all((target / p).is_symlink() for p in expected),
+        'sha256': {
+            str(p): hashlib.sha256((target / p).read_bytes()).hexdigest()
+            for p in expected
+        },
+    }
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--target', required=True)
     parser.add_argument('--backup', required=True)
+    parser.add_argument('--receipt')
     arguments = parser.parse_args()
-    deploy(Path(__file__).parent, arguments.target, arguments.backup)
+    receipt = deploy(Path(__file__).parent, arguments.target, arguments.backup)
+    if arguments.receipt:
+        Path(arguments.receipt).write_text(json.dumps(receipt, indent=2))

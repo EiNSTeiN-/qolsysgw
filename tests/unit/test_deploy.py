@@ -18,7 +18,10 @@ def test_hacs_update_and_new_modules_reach_active_install(tmp_path):
     target.mkdir()
     (source / 'gateway.py').write_text('version = 1')
     (target / 'gateway.py').write_text('old installed version')
-    DEPLOY.deploy(source, target, backup)
+    receipt = DEPLOY.deploy(source, target, backup)
+    assert receipt['all_linked']
+    assert receipt['linked_files'] == 1
+    assert 'gateway.py' in receipt['sha256']
     assert (backup / 'gateway.py').read_text() == 'old installed version'
     assert (target / 'gateway.py').is_symlink()
     (source / 'replacement.py').write_text('version = 2')
