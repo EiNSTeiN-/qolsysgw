@@ -1,5 +1,26 @@
 # Qolsys Gateway - `qolsysgw`
 
+This maintained fork is installed from **EiNSTeiN-/qolsysgw** in HACS. It includes
+ASCII MQTT discovery identifiers, canonical Unicode zone-name handling, and the
+retained `None` timestamp used when no panel error exists. The upstream project
+remains [xaf/qolsysgw](https://github.com/xaf/qolsysgw).
+
+When the AppDaemon app and HACS use different configuration mounts, link the
+active Python files to HACS's managed copy before AppDaemon starts:
+
+```sh
+python3 /homeassistant/appdaemon/apps/qolsysgw/deploy.py \
+  --target /config/apps/qolsysgw \
+  --backup /config/codex_backups/qolsysgw-before-fork
+```
+
+Keep that command in the AppDaemon app's `init_commands`. It performs deployment
+wiring, not source-code patching: HACS updates the fork, and the active app reads
+those files. Existing Python files are backed up once. Directories stay real so
+AppDaemon can discover and watch the linked modules. This also links new source
+files after an update. The deployment tests verify that replacing a managed file
+changes the active installation without copying or reapplying a hotfix.
+
 ![build](https://github.com/XaF/qolsysgw/actions/workflows/build.yaml/badge.svg)
 ![hacs validation](https://github.com/XaF/qolsysgw/actions/workflows/hacs-validation.yaml/badge.svg)
 [![latest release](https://img.shields.io/github/v/release/XaF/qolsysgw?logo=github&sort=semver)](https://github.com/XaF/qolsysgw/releases)

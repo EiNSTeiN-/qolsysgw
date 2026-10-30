@@ -25,6 +25,17 @@ class TestUnitNormalizeNameToId(unittest.TestCase):
         self.assertEqual('__',
                          normalize_name_to_id('北亰'))
 
+    def test_coffee_machine_zone_has_ascii_discovery_identifier(self):
+        self.assertEqual('flood_machine_cafe',
+                         normalize_name_to_id('FLOOD Machine Café'))
+
+    def test_decomposed_accent_keeps_the_same_identifier(self):
+        self.assertEqual(normalize_name_to_id('FLOOD Machine Café'),
+                         normalize_name_to_id('FLOOD Machine Cafe\u0301'))
+
+    def test_unnamed_unicode_control_character_does_not_stop_gateway(self):
+        self.assertEqual('zone_name', normalize_name_to_id('Zone\x00Name'))
+
 
 if __name__ == '__main__':
     unittest.main()

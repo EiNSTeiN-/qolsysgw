@@ -2,7 +2,6 @@ import logging
 import re
 import unicodedata
 
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -13,7 +12,7 @@ def rmdiacritics(char):
 
     Taken from https://stackoverflow.com/a/15547803
     '''
-    desc = unicodedata.name(char)
+    desc = unicodedata.name(char, '')
     cutoff = desc.find(' WITH ')
     if cutoff != -1:
         desc = desc[:cutoff]
@@ -25,6 +24,8 @@ def rmdiacritics(char):
 
 
 def normalize_name_to_id(name):
-    ascii_name = ''.join([rmdiacritics(c) for c in name])
+    # Canonically equivalent zone names must keep the same discovery identifier.
+    normalized_name = unicodedata.normalize('NFC', name)
+    ascii_name = ''.join([rmdiacritics(c) for c in normalized_name])
     clean_name = re.sub(r'[^a-zA-Z0-9_]', '_', ascii_name)
     return clean_name.lower()
