@@ -1,4 +1,8 @@
+# ruff: noqa: I001
+# testenv must add the application paths before importing mqtt.
 import unittest
+
+import tests.unit.qolsysgw.mqtt.testenv  # noqa: F401
 
 from mqtt.utils import normalize_name_to_id
 
